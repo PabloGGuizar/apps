@@ -1,0 +1,13 @@
+name: Test Action
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print issue body
+        run: echo "${{ github.event.issue.body }}"
