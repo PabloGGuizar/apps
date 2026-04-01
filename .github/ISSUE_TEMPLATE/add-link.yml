@@ -1,0 +1,19 @@
+name: "Agregar enlace"
+description: "Crear o actualizar un enlace corto"
+title: "[LINK]"
+body:
+  - type: input
+    id: slug
+    attributes:
+      label: Slug
+      placeholder: "mi-app"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      placeholder: "https://..."
+    validations:
+      required: true
