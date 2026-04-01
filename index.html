@@ -8,7 +8,7 @@
 <script>
 const slug = window.location.pathname.replace("/", "");
 
-fetch("/links.json")
+fetch("./links.json")
   .then(res => res.json())
   .then(data => {
     if (data[slug]) {
