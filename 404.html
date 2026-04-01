@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirect</title>
+</head>
+<body>
+<script>
+const slug = window.location.pathname.replace("/apps/", "");
+
+fetch("./links.json")
+  .then(res => res.json())
+  .then(data => {
+    if (data[slug]) {
+      window.location.href = data[slug];
+    } else {
+      document.body.innerHTML = "404 - Link no encontrado";
+    }
+  });
+</script>
+</body>
+</html>
