@@ -1,13 +1,47 @@
-name: Test Action
+name: Update links.json
 
 on:
   issues:
     types: [opened]
 
 jobs:
-  test:
+  update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print issue body
-        run: echo "${{ github.event.issue.body }}"
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Extract slug and url
+        id: extract
+        run: |
+          BODY="${{ github.event.issue.body }}"
+
+          SLUG=$(echo "$BODY" | grep -A1 "Slug" | tail -n1 | xargs)
+          URL=$(echo "$BODY" | grep -A1 "URL" | tail -n1 | xargs)
+
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Debug
+        run: |
+          echo "Slug: ${{ steps.extract.outputs.slug }}"
+          echo "URL: ${{ steps.extract.outputs.url }}"
+
+      - name: Update JSON
+        run: |
+          jq '. + {"'${{ steps.extract.outputs.slug }}'": "'${{ steps.extract.outputs.url }}'"}' links.json > tmp.json
+          mv tmp.json links.json
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add links.json
+          git commit -m "Update link ${{ steps.extract.outputs.slug }}" || echo "No changes"
+          git push
+
+      - name: Close issue
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: "✅ Enlace actualizado automáticamente"
