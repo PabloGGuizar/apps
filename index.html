@@ -1,22 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Redirect</title>
-</head>
-<body>
-<script>
-const slug = window.location.pathname.replace("/", "");
-
-fetch("./links.json")
-  .then(res => res.json())
-  .then(data => {
-    if (data[slug]) {
-      window.location.href = data[slug];
-    } else {
-      document.body.innerHTML = "404 - Link no encontrado";
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Enlaces</title>
+  <!-- Importar Tailwind CSS para los estilos modernos -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Importar FontAwesome para los iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Animación sutil para el fondo degradado */
+    @keyframes gradient-xy {
+      0%, 100% {
+        background-size: 400% 400%;
+        background-position: left center;
+      }
+      50% {
+        background-size: 200% 200%;
+        background-position: right center;
+      }
     }
-  });
-</script>
+    .animate-gradient-xy {
+      animation: gradient-xy 15s ease infinite;
+    }
+    /* Efecto de cristal (Glassmorphism) */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .glass-button {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .glass-button:hover {
+      background: rgba(255, 255, 255, 0.9);
+      color: #3b82f6; /* Cambia el color del texto al pasar el cursor */
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    /* Estilos personalizados para el scrollbar del acordeón */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy min-h-screen text-white flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+
+  <!-- Acordeón de Enlaces JSON (Esquina Superior Derecha) -->
+  <div class="fixed top-4 right-4 z-50">
+    <button id="json-links-toggle" class="glass-button px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold text-white shadow-lg focus:outline-none">
+      <i class="fa-solid fa-list-ul"></i>
+      <span class="hidden sm:inline">Todos los enlaces</span>
+      <span class="sm:hidden">Enlaces</span>
+      <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" id="json-links-icon"></i>
+    </button>
+    
+    <!-- Panel Desplegable -->
+    <div id="json-links-panel" class="hidden absolute top-full mt-2 right-0 w-64 glass-card rounded-xl overflow-hidden shadow-2xl flex-col max-h-80 custom-scrollbar overflow-y-auto transform origin-top transition-all duration-300">
+      <div id="json-links-container" class="p-2 flex flex-col gap-1">
+        <!-- Indicador de Carga -->
+        <div class="text-xs text-white/70 p-4 text-center flex flex-col items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-lg"></i>
+          <span>Cargando enlaces...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor Principal -->
+  <main class="w-full max-w-md glass-card rounded-3xl p-8 shadow-2xl flex flex-col items-center mt-8">
+    
+    <!-- Foto de Perfil -->
+    <div class="relative w-28 h-28 mb-6">
+      <!-- Reemplaza el src con la URL de tu propia foto -->
+      <img src="https://ui-avatars.com/api/?name=Pablo+G&background=random&size=128" alt="Perfil" class="rounded-full w-full h-full object-cover border-4 border-white/30 shadow-lg">
+      <div class="absolute bottom-0 right-0 bg-green-400 w-6 h-6 rounded-full border-4 border-purple-500/50"></div>
+    </div>
+
+    <!-- Título y Biografía -->
+    <h1 class="text-2xl font-bold mb-2 text-center">Pablo G. Guízar</h1>
+    <p class="text-center text-white/80 mb-8 text-sm px-4">
+      Profesor universitario, vibe coder y apasionado por la tecnología. Bienvenido a mi espacio de enlaces.
+    </p>
+
+    <!-- Lista de Enlaces -->
+    <div class="w-full flex flex-col gap-4">
+      
+      <!-- Botón 1: GitHub -->
+      <a href="https://github.com/pablogguizar" target="_blank" rel="noopener noreferrer" class="glass-button w-full flex items-center justify-between px-6 py-4 rounded-xl font-semibold text-white no-underline">
+        <div class="flex items-center gap-3">
+          <i class="fa-brands fa-github text-xl"></i>
+          <span>GitHub</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+      </a>
+
+      <!-- Botón 2: LinkedIn -->
+      <a href="https://www.linkedin.com/in/pablogguizar/" target="_blank" rel="noopener noreferrer" class="glass-button w-full flex items-center justify-between px-6 py-4 rounded-xl font-semibold text-white no-underline">
+        <div class="flex items-center gap-3">
+          <i class="fa-brands fa-linkedin text-xl"></i>
+          <span>LinkedIn</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+      </a>
+
+      <!-- Botón 3: Portfolio/Sitio Web -->
+      <a href="https://vibe-coding-educativo.github.io/app_edu/?author=Pablo+G.+Gu%C3%ADzar" target="_blank" rel="noopener noreferrer" class="glass-button w-full flex items-center justify-between px-6 py-4 rounded-xl font-semibold text-white no-underline">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-globe text-xl"></i>
+          <span>Mi Portafolio</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+      </a>
+
+      <!-- Botón 4: Comunidad de Telegram -->
+      <a href="https://t.me/vceduca" target="_blank" rel="noopener noreferrer" class="glass-button w-full flex items-center justify-between px-6 py-4 rounded-xl font-semibold text-white no-underline">
+        <div class="flex items-center gap-3">
+          <i class="fa-brands fa-telegram text-xl"></i>
+          <span>Vibe Coding Educativo</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- Footer Simple -->
+  <footer class="mt-12 text-center text-white/60 text-sm">
+    <p>Construido con ❤️ usando GitHub Pages</p>
+  </footer>
+
+  <!-- Script para la lógica del Acordeón JSON -->
+  <script>
+    const toggleBtn = document.getElementById('json-links-toggle');
+    const panel = document.getElementById('json-links-panel');
+    const icon = document.getElementById('json-links-icon');
+    const container = document.getElementById('json-links-container');
+    
+    let linksLoaded = false;
+
+    // Manejar el clic en el botón
+    toggleBtn.addEventListener('click', () => {
+      // Alternar clases para mostrar/ocultar
+      panel.classList.toggle('hidden');
+      panel.classList.toggle('flex');
+      
+      // Rotar la flechita
+      icon.classList.toggle('rotate-180');
+      
+      // Si el panel se acaba de abrir y no hemos cargado los links, hacer fetch
+      if (!panel.classList.contains('hidden') && !linksLoaded) {
+        loadLinksFromJson();
+      }
+    });
+
+    // Cerrar el panel si se hace clic fuera de él
+    document.addEventListener('click', (event) => {
+      if (!toggleBtn.contains(event.target) && !panel.contains(event.target)) {
+        if (!panel.classList.contains('hidden')) {
+          panel.classList.add('hidden');
+          panel.classList.remove('flex');
+          icon.classList.remove('rotate-180');
+        }
+      }
+    });
+
+    function loadLinksFromJson() {
+      // Usar la ruta adecuada (relativa en el Canvas, absoluta en GitHub Pages)
+      let jsonUrl = "/apps/links.json";
+      if (window.location.protocol === 'blob:' || window.location.hostname.includes('usercontent.goog')) {
+        jsonUrl = "./links.json";
+      }
+
+      // Simulamos un pequeño retraso visual para el efecto de carga, luego pedimos el JSON
+      setTimeout(() => {
+        fetch(jsonUrl)
+          .then(res => res.json())
+          .then(data => {
+            container.innerHTML = ''; // Limpiar el indicador de carga
+            
+            const entries = Object.entries(data);
+            
+            // Filtrar las entradas vacías si llegaran a existir
+            const validEntries = entries.filter(([slug, url]) => slug.trim() !== "" && url.trim() !== "");
+
+            if (validEntries.length === 0) {
+              container.innerHTML = '<div class="text-xs text-white/70 p-4 text-center">No hay enlaces disponibles.</div>';
+              return;
+            }
+
+            // Crear un botón para cada enlace encontrado en el JSON
+            validEntries.forEach(([slug, url]) => {
+              const a = document.createElement('a');
+              a.href = url; // Aquí también podrías poner "/apps/" + slug para que pase por tu acortador
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              a.className = 'group flex flex-col p-3 hover:bg-white/20 rounded-lg transition-colors border border-transparent hover:border-white/10 no-underline';
+              
+              a.innerHTML = `
+                <span class="font-bold text-sm text-white group-hover:text-blue-200 transition-colors">/${slug}</span>
+                <span class="text-xs text-white/60 truncate w-full" title="${url}">${url}</span>
+              `;
+              
+              container.appendChild(a);
+            });
+            
+            linksLoaded = true; // Evita volver a descargar el JSON la próxima vez que se abra
+          })
+          .catch(err => {
+            console.error("Error al cargar JSON:", err);
+            container.innerHTML = `
+              <div class="text-xs text-red-300 p-4 text-center flex flex-col items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                <span>Error al cargar enlaces.</span>
+              </div>`;
+          });
+      }, 500); // 500ms de retraso para mostrar el spinner animado
+    }
+  </script>
 </body>
 </html>
