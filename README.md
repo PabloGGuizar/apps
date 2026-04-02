@@ -1,4 +1,4 @@
-# **🔗 Acortador de Enlaces y Página Personal (Serverless)**
+# **🔗 Redireccionador de Enlaces y Página Personal (Serverless)**
 
 Un sistema híbrido ligero y sin servidor alojado en GitHub Pages. Funciona como una **página de perfil (estilo Linktree)** y como un **motor de redirección de URLs cortas**, automatizado completamente a través de GitHub Actions y GitHub Issues.
 
