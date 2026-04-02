@@ -23,8 +23,8 @@ jobs:
           echo "$BODY"
           echo "--------------"
 
-          SLUG=$(echo "$BODY" | grep '^slug:' | head -n1 | cut -d ':' -f2- | xargs)
-          URL=$(echo "$BODY" | grep '^url:' | head -n1 | cut -d ':' -f2- | xargs)
+          SLUG=$(echo "$BODY" | grep '^slug=' | head -n1 | cut -d '=' -f2- | xargs)
+          URL=$(echo "$BODY" | grep '^url=' | head -n1 | cut -d '=' -f2- | xargs)
 
           echo "Slug: $SLUG"
           echo "URL: $URL"
