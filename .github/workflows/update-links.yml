@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract slug and url
+      - name: Extract data
         id: extract
         run: |
           BODY="${{ github.event.issue.body }}"
@@ -23,25 +23,37 @@ jobs:
           echo "$BODY"
           echo "--------------"
 
-          SLUG=$(echo "$BODY" | grep '^slug=' | cut -d '=' -f2 | xargs)
-          URL=$(echo "$BODY" | grep '^url=' | cut -d '=' -f2 | xargs)
+          SLUG=$(echo "$BODY" | grep '^slug:' | head -n1 | cut -d ':' -f2- | xargs)
+          URL=$(echo "$BODY" | grep '^url:' | head -n1 | cut -d ':' -f2- | xargs)
 
           echo "Slug: $SLUG"
           echo "URL: $URL"
 
-          if [ -z "$SLUG" ] || [ -z "$URL" ]; then
-            echo "❌ Error: formato incorrecto"
+          if [ -z "$SLUG" ]; then
+            echo "❌ Error: slug es obligatorio"
             exit 1
           fi
 
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
           echo "url=$URL" >> $GITHUB_OUTPUT
 
-      - name: Update JSON
+      - name: Update links.json
         run: |
-          jq --arg slug "${{ steps.extract.outputs.slug }}" \
-             --arg url "${{ steps.extract.outputs.url }}" \
-             '.[$slug]=$url' links.json > tmp.json
+          SLUG="${{ steps.extract.outputs.slug }}"
+          URL="${{ steps.extract.outputs.url }}"
+
+          echo "Processing slug: $SLUG"
+
+          if [ -z "$URL" ]; then
+            echo "🗑️ Deleting entry"
+
+            jq --arg slug "$SLUG" 'del(.[$slug])' links.json > tmp.json
+          else
+            echo "✏️ Creating/updating entry"
+
+            jq --arg slug "$SLUG" --arg url "$URL" '.[$slug]=$url' links.json > tmp.json
+          fi
+
           mv tmp.json links.json
 
       - name: Commit changes
@@ -55,4 +67,4 @@ jobs:
       - name: Close issue
         uses: peter-evans/close-issue@v3
         with:
-          comment: "✅ Enlace actualizado automáticamente"
+          comment: "✅ Cambio aplicado automáticamente"
