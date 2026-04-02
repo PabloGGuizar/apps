@@ -2,12 +2,19 @@
 
 Un sistema híbrido ligero y sin servidor alojado en GitHub Pages. Funciona como una **página de perfil (estilo Linktree)** y como un **motor de redirección de URLs cortas**, automatizado completamente a través de GitHub Actions y GitHub Issues.
 
+![Vista previa de la página de inicio](assets/index.png) 
+![Vista del error 404](assets/404.png)
+
 ## **🚀 ¿Cómo funciona?**
 
 Esta aplicación utiliza la arquitectura estática de GitHub Pages dividiendo el trabajo en dos archivos principales:
 
 1. **La Página Principal (index.html):** Cuando los usuarios visitan la raíz de tu sitio (ej. tusitio.com/apps/), ven una página de perfil moderna con tus enlaces principales estáticos y un menú desplegable que lee dinámicamente tu base de datos de enlaces.  
 2. **El Motor de Redirección (404.html):** Cuando un usuario ingresa a un enlace corto (ej. tusitio.com/apps/mi-link), GitHub no encuentra la carpeta y recurre al archivo 404.html. Este script captura el *slug* de la URL, consulta la base de datos links.json y redirige automáticamente a la URL de destino. Si no existe, muestra un mensaje de error 404 amigable.
+![Pestaña de Issues](assets/issue.png)
+![Seleccionar plantilla](assets/agregar-enlace.png)
+![Formulario de Issue](assets/form.png)
+
 
 ## **⚙️ Gestión de Enlaces (Añadir, Editar o Eliminar)**
 
