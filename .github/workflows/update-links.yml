@@ -19,10 +19,14 @@ jobs:
         id: extract
         run: |
           BODY="${{ github.event.issue.body }}"
-
-          SLUG=$(echo "$BODY" | grep -A1 "Slug" | tail -n1 | xargs)
-          URL=$(echo "$BODY" | grep -A1 "URL" | tail -n1 | xargs)
-
+      
+          echo "----- ISSUE BODY -----"
+          echo "$BODY"
+          echo "----------------------"
+      
+          SLUG=$(echo "$BODY" | awk '/Slug/{getline; print}' | xargs)
+          URL=$(echo "$BODY" | awk '/URL/{getline; print}' | xargs)
+      
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
           echo "url=$URL" >> $GITHUB_OUTPUT
 
