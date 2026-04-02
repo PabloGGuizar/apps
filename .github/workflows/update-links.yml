@@ -23,15 +23,14 @@ jobs:
           echo "$BODY"
           echo "--------------"
 
-          # Extrae slug y url ignorando encabezados
-          SLUG=$(echo "$BODY" | sed -n '/Slug/{n;p;}' | head -n1 | xargs)
-          URL=$(echo "$BODY" | sed -n '/URL/{n;p;}' | head -n1 | xargs)
+          SLUG=$(echo "$BODY" | grep '^slug=' | cut -d '=' -f2 | xargs)
+          URL=$(echo "$BODY" | grep '^url=' | cut -d '=' -f2 | xargs)
 
           echo "Slug: $SLUG"
           echo "URL: $URL"
 
           if [ -z "$SLUG" ] || [ -z "$URL" ]; then
-            echo "❌ Error: slug o url vacíos"
+            echo "❌ Error: formato incorrecto"
             exit 1
           fi
 
