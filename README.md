@@ -26,7 +26,7 @@ No es necesario editar el código fuente ni el archivo links.json manualmente pa
 2. Haz clic en **New Issue** y selecciona la plantilla **"Agregar enlace"**.  
 3. En la descripción, llena los datos con el siguiente formato:  
    slug=nombre-de-tu-enlace  
-   url=\[https://la-url-de-destino.com\](https://la-url-de-destino.com)
+   url=https://la-url-de-destino.com
 
 4. Haz clic en **Submit new issue**.  
 5. ¡Listo\! Un flujo de trabajo de GitHub Actions (update-links.yml) leerá tu issue, actualizará links.json, hará el commit y cerrará el issue automáticamente.
