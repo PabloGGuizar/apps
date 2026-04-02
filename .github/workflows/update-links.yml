@@ -3,41 +3,46 @@ name: Update links.json
 on:
   issues:
     types: [opened]
-    
+
 permissions:
   contents: write
-  
+
 jobs:
   update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Extract slug and url
         id: extract
         run: |
           BODY="${{ github.event.issue.body }}"
-      
-          echo "----- ISSUE BODY -----"
+
+          echo "---- BODY ----"
           echo "$BODY"
-          echo "----------------------"
-      
-          SLUG=$(echo "$BODY" | awk '/Slug/{getline; print}' | xargs)
-          URL=$(echo "$BODY" | awk '/URL/{getline; print}' | xargs)
-      
+          echo "--------------"
+
+          # Extrae slug y url ignorando encabezados
+          SLUG=$(echo "$BODY" | sed -n '/Slug/{n;p;}' | head -n1 | xargs)
+          URL=$(echo "$BODY" | sed -n '/URL/{n;p;}' | head -n1 | xargs)
+
+          echo "Slug: $SLUG"
+          echo "URL: $URL"
+
+          if [ -z "$SLUG" ] || [ -z "$URL" ]; then
+            echo "❌ Error: slug o url vacíos"
+            exit 1
+          fi
+
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
           echo "url=$URL" >> $GITHUB_OUTPUT
 
-      - name: Debug
-        run: |
-          echo "Slug: ${{ steps.extract.outputs.slug }}"
-          echo "URL: ${{ steps.extract.outputs.url }}"
-
       - name: Update JSON
         run: |
-          jq '. + {"'${{ steps.extract.outputs.slug }}'": "'${{ steps.extract.outputs.url }}'"}' links.json > tmp.json
+          jq --arg slug "${{ steps.extract.outputs.slug }}" \
+             --arg url "${{ steps.extract.outputs.url }}" \
+             '.[$slug]=$url' links.json > tmp.json
           mv tmp.json links.json
 
       - name: Commit changes
